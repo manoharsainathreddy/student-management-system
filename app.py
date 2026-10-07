@@ -1,6 +1,7 @@
 import os
 import logging
-from flask import Flask, render_template, jsonify
+from functools import wraps
+from flask import Flask, render_template, jsonify, session, redirect, url_for
 from config import Config
 from database.mongodb import init_db, check_connection
 from routes.students import students_bp
@@ -32,44 +33,63 @@ app.register_blueprint(results_bp)
 app.register_blueprint(reports_bp)
 app.register_blueprint(admin_bp)
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('user'):
+            return redirect(url_for('login_page'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 # All 9 Screen HTML Page Routes
 @app.route('/login')
 def login_page():
+    if session.get('user'):
+        return redirect(url_for('index_page'))
     return render_template('login.html')
 
 @app.route('/')
+@login_required
 def index_page():
     return render_template('index.html')
 
 @app.route('/students')
+@login_required
 def students_page():
     return render_template('students.html')
 
 @app.route('/courses')
+@login_required
 def courses_page():
     return render_template('courses.html')
 
 @app.route('/enrollments')
+@login_required
 def enrollments_page():
     return render_template('enrollments.html')
 
 @app.route('/attendance')
+@login_required
 def attendance_page():
     return render_template('attendance.html')
 
 @app.route('/marks')
+@login_required
 def marks_page():
     return render_template('marks.html')
 
 @app.route('/results')
+@login_required
 def results_page():
     return render_template('results.html')
 
 @app.route('/reports')
+@login_required
 def reports_page():
     return render_template('reports.html')
 
 @app.route('/collections')
+@login_required
 def collections_page():
     return render_template('collections.html')
 
