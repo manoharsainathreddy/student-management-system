@@ -48,6 +48,9 @@
                 <li class="nav-item">
                     <a href="/collections"><i class="fa-solid fa-database"></i> <span>Collections</span></a>
                 </li>
+                <li class="nav-item nav-logout" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
+                    <a href="javascript:void(0)" onclick="handleLogout()" style="color: var(--accent-rose, #f43f5e);"><i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span></a>
+                </li>
             </ul>
 
             <div class="sidebar-footer">
@@ -64,6 +67,9 @@
                 <div class="header-title">
                     <h2>Semester Results & SGPA Evaluation</h2>
                     <p>Semester Grade Point Average (SGPA) calculation formula: Σ(Credit × Grade Point) / Σ(Credits)</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" onclick="handleLogout()" style="border-color: rgba(244,63,94,0.4); color: #f43f5e;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                 </div>
             </header>
 

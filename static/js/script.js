@@ -851,3 +851,16 @@ async function populateStudentCourseDropdowns(studentSelectId, courseSelectId) {
         } catch (err) {}
     }
 }
+
+/* Global Logout Handler */
+window.handleLogout = async function() {
+    try {
+        await apiFetch('/api/auth/logout', { method: 'POST' });
+        showToast('Logged out successfully', 'success');
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 500);
+    } catch (err) {
+        window.location.href = '/login';
+    }
+};
