@@ -15,8 +15,8 @@ def get_client():
         try:
             _client = MongoClient(
                 Config.MONGO_URI,
-                serverSelectionTimeoutMS=3000,
-                connectTimeoutMS=3000
+                serverSelectionTimeoutMS=10000,
+                connectTimeoutMS=10000
             )
             # Test ping
             _client.admin.command('ping')
