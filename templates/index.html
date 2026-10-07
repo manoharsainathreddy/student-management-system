@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Student Management System (MongoDB)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h1>EduMongo</h1>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item active">
+                    <a href="/"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/students"><i class="fa-solid fa-user-graduate"></i> <span>Students</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/courses"><i class="fa-solid fa-book-open"></i> <span>Courses</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/enrollments"><i class="fa-solid fa-id-card"></i> <span>Enrollments</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/marks"><i class="fa-solid fa-award"></i> <span>Marks</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/attendance"><i class="fa-solid fa-clipboard-user"></i> <span>Attendance</span></a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="db-badge">
+                    <div class="db-dot"></div>
+                    <span>MongoDB Local</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <main class="main-wrapper">
+            <header class="top-header">
+                <div class="header-title">
+                    <h2>Academic Dashboard</h2>
+                    <p>Real-time NoSQL database statistics & aggregation metrics</p>
+                </div>
+                <div class="header-actions">
+                    <span class="badge badge-dept"><i class="fa-solid fa-database"></i> student_management</span>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Top Statistics Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon indigo"><i class="fa-solid fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-total-students">0</h3>
+                            <p>Total Students</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon cyan"><i class="fa-solid fa-book"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-total-courses">0</h3>
+                            <p>Total Courses</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="fa-solid fa-link"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-total-enrollments">0</h3>
+                            <p>Total Enrollments</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon emerald"><i class="fa-solid fa-award"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-avg-marks">0%</h3>
+                            <p>Average Marks</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon amber"><i class="fa-solid fa-clipboard-check"></i></div>
+                        <div class="stat-info">
+                            <h3 id="stat-avg-attendance">0%</h3>
+                            <p>Avg Attendance</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aggregation Charts & Breakdowns Grid -->
+                <div class="dashboard-grid">
+                    <!-- Students by Department -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-building-columns"></i> Students by Department</h3>
+                            <span class="badge badge-dept">$group pipeline</span>
+                        </div>
+                        <div class="dept-list" id="dept-breakdown-container">
+                            <!-- Populated via script -->
+                        </div>
+                    </div>
+
+                    <!-- Grade Distribution -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-chart-bar"></i> Grade Distribution</h3>
+                            <span class="badge badge-dept">$group pipeline</span>
+                        </div>
+                        <div class="grade-list" id="grade-distribution-container">
+                            <!-- Populated via script -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Low Attendance Table (< 75%) -->
+                <div class="table-card">
+                    <div class="card-header" style="padding: 1.25rem 1.5rem; margin-bottom: 0;">
+                        <h3><i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-rose);"></i> Low Attendance Warning (&lt; 75%)</h3>
+                        <span class="badge badge-att-low">$match + $lookup pipeline</span>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Course</th>
+                                    <th>Attended / Held</th>
+                                    <th>Attendance %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="low-attendance-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

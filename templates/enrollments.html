@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Enrollments | Student Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h1>EduMongo</h1>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/students"><i class="fa-solid fa-user-graduate"></i> <span>Students</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/courses"><i class="fa-solid fa-book-open"></i> <span>Courses</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a href="/enrollments"><i class="fa-solid fa-id-card"></i> <span>Enrollments</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/marks"><i class="fa-solid fa-award"></i> <span>Marks</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/attendance"><i class="fa-solid fa-clipboard-user"></i> <span>Attendance</span></a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="db-badge">
+                    <div class="db-dot"></div>
+                    <span>MongoDB Local</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <header class="top-header">
+                <div class="header-title">
+                    <h2>Student Course Enrollment</h2>
+                    <p>Enroll registered students into curriculum courses</p>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Enrollment Form Card -->
+                <div class="dashboard-card" style="margin-bottom: 2rem;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-user-plus"></i> New Enrollment Entry</h3>
+                    </div>
+                    <form id="enrollment-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Student <span class="required">*</span></label>
+                                <select id="enroll-student-select" class="form-control" required>
+                                    <option value="">Loading students...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Course <span class="required">*</span></label>
+                                <select id="enroll-course-select" class="form-control" required>
+                                    <option value="">Loading courses...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Semester <span class="required">*</span></label>
+                                <select id="enroll-semester-select" class="form-control" required>
+                                    <option value="1">Semester 1</option>
+                                    <option value="2">Semester 2</option>
+                                    <option value="3">Semester 3</option>
+                                    <option value="4" selected>Semester 4</option>
+                                    <option value="5">Semester 5</option>
+                                    <option value="6">Semester 6</option>
+                                    <option value="7">Semester 7</option>
+                                    <option value="8">Semester 8</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="justify-content: flex-end;">
+                                <label>&nbsp;</label>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa-solid fa-check"></i> Enroll Student
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Existing Enrollments Table -->
+                <div class="table-card">
+                    <div class="card-header" style="padding: 1.25rem 1.5rem; margin-bottom: 0;">
+                        <h3><i class="fa-solid fa-list-check"></i> Active Enrollments</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Course</th>
+                                    <th>Semester</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="enrollments-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Management | Student Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h1>EduMongo</h1>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/students"><i class="fa-solid fa-user-graduate"></i> <span>Students</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/courses"><i class="fa-solid fa-book-open"></i> <span>Courses</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/enrollments"><i class="fa-solid fa-id-card"></i> <span>Enrollments</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/marks"><i class="fa-solid fa-award"></i> <span>Marks</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a href="/attendance"><i class="fa-solid fa-clipboard-user"></i> <span>Attendance</span></a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="db-badge">
+                    <div class="db-dot"></div>
+                    <span>MongoDB Local</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <header class="top-header">
+                <div class="header-title">
+                    <h2>Attendance Tracker</h2>
+                    <p>Track class attendance and monitor student eligibility</p>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Attendance Entry Card -->
+                <div class="dashboard-card" style="margin-bottom: 2rem;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-clipboard-check"></i> Log Attendance</h3>
+                        <span class="badge badge-dept">Threshold: &gt;= 75%</span>
+                    </div>
+
+                    <form id="attendance-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Student <span class="required">*</span></label>
+                                <select id="att-student-select" class="form-control" required>
+                                    <option value="">Loading students...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Course <span class="required">*</span></label>
+                                <select id="att-course-select" class="form-control" required>
+                                    <option value="">Loading courses...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Total Classes Held <span class="required">*</span></label>
+                                <input type="number" id="classes_held" class="form-control" min="1" placeholder="e.g. 40" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Classes Attended <span class="required">*</span></label>
+                                <input type="number" id="classes_attended" class="form-control" min="0" placeholder="e.g. 36" required>
+                            </div>
+                        </div>
+
+                        <!-- Live Percentage Calculation Preview -->
+                        <div class="preview-box">
+                            <div class="preview-item">
+                                <label>Calculated Percentage</label>
+                                <span id="preview-percentage">0%</span>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa-solid fa-floppy-disk"></i> Save Attendance
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Attendance Table -->
+                <div class="table-card">
+                    <div class="card-header" style="padding: 1.25rem 1.5rem; margin-bottom: 0;">
+                        <h3><i class="fa-solid fa-clipboard-user"></i> Attendance Records</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Course</th>
+                                    <th>Classes Held</th>
+                                    <th>Classes Attended</th>
+                                    <th>Attendance %</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendance-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
