@@ -13,18 +13,30 @@ def get_client():
     global _client
     if _client is None:
         try:
+            # 1. Primary connection attempt
             _client = MongoClient(
                 Config.MONGO_URI,
-                serverSelectionTimeoutMS=10000,
-                connectTimeoutMS=10000
+                serverSelectionTimeoutMS=8000,
+                connectTimeoutMS=8000
             )
-            # Test ping
             _client.admin.command('ping')
             logger.info("Successfully connected to MongoDB server.")
-        except (ConnectionFailure, ServerSelectionTimeoutError) as e:
-            logger.error(f"Failed to connect to MongoDB: {e}")
-            _client = None
-            raise Exception("MongoDB server is not running or unreachable at " + Config.MONGO_URI)
+        except Exception as primary_error:
+            logger.warning(f"Primary MongoDB connection failed: {primary_error}. Trying TLS fallback...")
+            try:
+                # 2. Fallback attempt for cloud environments (tlsAllowInvalidCertificates)
+                _client = MongoClient(
+                    Config.MONGO_URI,
+                    serverSelectionTimeoutMS=10000,
+                    connectTimeoutMS=10000,
+                    tlsAllowInvalidCertificates=True
+                )
+                _client.admin.command('ping')
+                logger.info("Successfully connected to MongoDB server using TLS fallback.")
+            except Exception as fallback_error:
+                logger.error(f"Fallback connection also failed: {fallback_error}")
+                _client = None
+                raise Exception(f"MongoDB connection failed. Primary: {primary_error} | Fallback: {fallback_error}")
     return _client
 
 def get_db():
