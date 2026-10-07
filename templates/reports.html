@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Reports | Student Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h1>EduMongo</h1>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/students"><i class="fa-solid fa-user-graduate"></i> <span>Students</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/courses"><i class="fa-solid fa-book-open"></i> <span>Courses</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/enrollments"><i class="fa-solid fa-id-card"></i> <span>Enrollments</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/marks"><i class="fa-solid fa-award"></i> <span>Marks</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/attendance"><i class="fa-solid fa-clipboard-user"></i> <span>Attendance</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/results"><i class="fa-solid fa-file-certificate"></i> <span>Results & SGPA</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a href="/reports"><i class="fa-solid fa-chart-column"></i> <span>Reports</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/collections"><i class="fa-solid fa-database"></i> <span>Collections</span></a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="db-badge">
+                    <div class="db-dot"></div>
+                    <span>MongoDB Atlas</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <header class="top-header">
+                <div class="header-title">
+                    <h2>Academic Analytics & Reports</h2>
+                    <p>Comprehensive MongoDB Aggregation Reports for Attendance Shortage & Grade Analytics</p>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- REPORT A: Attendance Shortage -->
+                <div class="dashboard-card" style="margin-bottom: 2rem;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-rose);"></i> Report A: Attendance Shortage (&lt; Threshold)</h3>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <label style="font-size: 0.82rem; color: var(--text-muted);">Threshold %:</label>
+                            <input type="number" id="report-shortage-threshold" class="form-control" style="width: 80px; padding: 0.35rem 0.5rem;" value="75" min="50" max="100" onchange="loadShortageReport()">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Student ID</th>
+                                    <th>Student Name</th>
+                                    <th>Department</th>
+                                    <th>Course</th>
+                                    <th>Classes Attended</th>
+                                    <th>Attendance %</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="shortage-report-tbody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- REPORT B: Grade Distribution -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-chart-bar"></i> Report B: Grade Distribution & Pass Percentage</h3>
+                        <span class="badge badge-dept">Aggregate Performance</span>
+                    </div>
+
+                    <div class="stats-grid" style="margin-bottom: 1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon indigo"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <div class="stat-info">
+                                <h3 id="rep-total-evals">0</h3>
+                                <p>Total Evaluations</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon emerald"><i class="fa-solid fa-circle-check"></i></div>
+                            <div class="stat-info">
+                                <h3 id="rep-pass-count">0</h3>
+                                <p>Passed Students</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon rose" style="background: rgba(244, 63, 94, 0.15); color: var(--accent-rose);"><i class="fa-solid fa-circle-xmark"></i></div>
+                            <div class="stat-info">
+                                <h3 id="rep-fail-count">0</h3>
+                                <p>Failed Students</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon cyan"><i class="fa-solid fa-percent"></i></div>
+                            <div class="stat-info">
+                                <h3 id="rep-pass-pct">0%</h3>
+                                <p>Pass Percentage</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grade-list" id="report-grade-list">
+                        <!-- Grade progress bars -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadShortageReport();
+            loadGradeReport();
+        });
+
+        async function loadShortageReport() {
+            const threshold = document.getElementById('report-shortage-threshold').value || 75;
+            const tbody = document.getElementById('shortage-report-tbody');
+
+            try {
+                const res = await apiFetch(`/api/reports/attendance-shortage?threshold=${threshold}`);
+                tbody.innerHTML = '';
+
+                if (res.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color: var(--accent-emerald);">🎉 No students found with attendance below ${threshold}%!</td></tr>`;
+                    return;
+                }
+
+                res.data.forEach(item => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong class="text-cyan">${item.student_id}</strong></td>
+                            <td>${item.student_name || 'N/A'}</td>
+                            <td>${item.department || 'N/A'}</td>
+                            <td>${item.course_id} - ${item.course_name || ''}</td>
+                            <td>${item.classes_attended} / ${item.classes_held}</td>
+                            <td><strong class="text-rose" style="color: var(--accent-rose);">${item.attendance_percentage}%</strong></td>
+                            <td><span class="badge badge-att-low">SHORTAGE (&lt;${threshold}%)</span></td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {}
+        }
+
+        async function loadGradeReport() {
+            try {
+                const res = await apiFetch('/api/reports/grade-distribution');
+                const data = res.data;
+                const sum = data.summary;
+
+                document.getElementById('rep-total-evals').textContent = sum.total_evaluations;
+                document.getElementById('rep-pass-count').textContent = sum.pass_count;
+                document.getElementById('rep-fail-count').textContent = sum.fail_count;
+                document.getElementById('rep-pass-pct').textContent = `${sum.pass_percentage}%`;
+
+                const list = document.getElementById('report-grade-list');
+                list.innerHTML = '';
+
+                const total = sum.total_evaluations || 1;
+
+                data.distribution.forEach(g => {
+                    const pct = Math.round((g.count / total) * 100);
+                    const gradeClass = getGradeBadgeClass(g.grade);
+
+                    list.innerHTML += `
+                        <div class="grade-item">
+                            <div class="item-meta">
+                                <label><span class="badge ${gradeClass}">${g.grade}</span></label>
+                                <span>${g.count} Records (${pct}%)</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill fill-indigo" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (err) {}
+        }
+    </script>
+</body>
+</html>

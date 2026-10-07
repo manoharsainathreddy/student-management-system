@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Collections | Student Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .collection-btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .collection-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.65rem 1.1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+        .collection-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .collection-btn.active {
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+        pre.json-viewer {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: #38bdf8;
+            max-height: 80px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h1>EduMongo</h1>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/students"><i class="fa-solid fa-user-graduate"></i> <span>Students</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/courses"><i class="fa-solid fa-book-open"></i> <span>Courses</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/enrollments"><i class="fa-solid fa-id-card"></i> <span>Enrollments</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/marks"><i class="fa-solid fa-award"></i> <span>Marks</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/attendance"><i class="fa-solid fa-clipboard-user"></i> <span>Attendance</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/results"><i class="fa-solid fa-file-certificate"></i> <span>Results & SGPA</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/reports"><i class="fa-solid fa-chart-column"></i> <span>Reports</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a href="/collections"><i class="fa-solid fa-database"></i> <span>Collections</span></a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="db-badge">
+                    <div class="db-dot"></div>
+                    <span>MongoDB Atlas</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <header class="top-header">
+                <div class="header-title">
+                    <h2>MongoDB Collections Inspector (Admin)</h2>
+                    <p>Live document viewer for whitelisted MongoDB database collections in 'student_management'</p>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Collection Selector Buttons -->
+                <div class="collection-btn-group" id="collections-selector-container">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Document Table Viewer -->
+                <div class="table-card">
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="admin-col-search" placeholder="Search collection documents..." oninput="debounceColSearch()">
+                        </div>
+                        <span class="badge badge-dept" id="admin-col-meta">Collection: students</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead id="admin-col-thead">
+                                <!-- Headers -->
+                            </thead>
+                            <tbody id="admin-col-tbody">
+                                <!-- Documents -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        let currentSelectedCollection = 'students';
+        let debounceTimer;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCollectionsList();
+        });
+
+        async function loadCollectionsList() {
+            try {
+                const res = await apiFetch('/api/admin/collections');
+                const container = document.getElementById('collections-selector-container');
+                container.innerHTML = '';
+
+                res.collections.forEach(col => {
+                    const btn = document.createElement('button');
+                    btn.className = `collection-btn ${col.name === currentSelectedCollection ? 'active' : ''}`;
+                    btn.onclick = () => selectCollection(col.name);
+                    btn.innerHTML = `<i class="fa-solid fa-folder-open"></i> ${col.name} <span class="badge badge-dept" style="margin-left: 0.3rem;">${col.count}</span>`;
+                    container.appendChild(btn);
+                });
+
+                loadCollectionData(currentSelectedCollection);
+            } catch (err) {}
+        }
+
+        function selectCollection(colName) {
+            currentSelectedCollection = colName;
+            document.querySelectorAll('.collection-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.includes(colName));
+            });
+            loadCollectionData(colName);
+        }
+
+        function debounceColSearch() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                loadCollectionData(currentSelectedCollection);
+            }, 300);
+        }
+
+        async function loadCollectionData(colName) {
+            const query = document.getElementById('admin-col-search').value.trim();
+            const metaBadge = document.getElementById('admin-col-meta');
+            const thead = document.getElementById('admin-col-thead');
+            const tbody = document.getElementById('admin-col-tbody');
+
+            metaBadge.textContent = `Collection: ${colName}`;
+
+            try {
+                const res = await apiFetch(`/api/admin/collections/${colName}?q=${encodeURIComponent(query)}`);
+                const docs = res.documents || [];
+
+                if (docs.length === 0) {
+                    thead.innerHTML = '<tr><th>Document Content</th></tr>';
+                    tbody.innerHTML = '<tr><td class="text-muted" style="text-align:center;">No documents found in collection.</td></tr>';
+                    return;
+                }
+
+                // Extract keys for dynamic table headers
+                const sampleDoc = docs[0];
+                const keys = Object.keys(sampleDoc);
+
+                let headerHtml = '<tr>';
+                keys.forEach(k => { headerHtml += `<th>${k}</th>`; });
+                headerHtml += '</tr>';
+                thead.innerHTML = headerHtml;
+
+                let bodyHtml = '';
+                docs.forEach(doc => {
+                    bodyHtml += '<tr>';
+                    keys.forEach(k => {
+                        const val = doc[k];
+                        if (typeof val === 'object' && val !== null) {
+                            bodyHtml += `<td><pre class="json-viewer">${JSON.stringify(val)}</pre></td>`;
+                        } else {
+                            bodyHtml += `<td>${val !== undefined ? val : ''}</td>`;
+                        }
+                    });
+                    bodyHtml += '</tr>';
+                });
+                tbody.innerHTML = bodyHtml;
+
+            } catch (err) {
+                tbody.innerHTML = '<tr><td style="text-align:center; color: var(--accent-rose);">Failed to load collection data.</td></tr>';
+            }
+        }
+    </script>
+</body>
+</html>

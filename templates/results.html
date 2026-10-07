@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Results & SGPA | Student Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="brand-text">
+                    <h1>EduMongo</h1>
+                    <span>Student Portal</span>
+                </div>
+            </div>
+
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a href="/"><i class="fa-solid fa-chart-pie"></i> <span>Dashboard</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/students"><i class="fa-solid fa-user-graduate"></i> <span>Students</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/courses"><i class="fa-solid fa-book-open"></i> <span>Courses</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/enrollments"><i class="fa-solid fa-id-card"></i> <span>Enrollments</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/marks"><i class="fa-solid fa-award"></i> <span>Marks</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/attendance"><i class="fa-solid fa-clipboard-user"></i> <span>Attendance</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a href="/results"><i class="fa-solid fa-file-certificate"></i> <span>Results & SGPA</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/reports"><i class="fa-solid fa-chart-column"></i> <span>Reports</span></a>
+                </li>
+                <li class="nav-item">
+                    <a href="/collections"><i class="fa-solid fa-database"></i> <span>Collections</span></a>
+                </li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div class="db-badge">
+                    <div class="db-dot"></div>
+                    <span>MongoDB Atlas</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <header class="top-header">
+                <div class="header-title">
+                    <h2>Semester Results & SGPA Evaluation</h2>
+                    <p>Semester Grade Point Average (SGPA) calculation formula: Σ(Credit × Grade Point) / Σ(Credits)</p>
+                </div>
+            </header>
+
+            <div class="page-content">
+                <!-- Student Selection Card -->
+                <div class="dashboard-card" style="margin-bottom: 2rem;">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-user-check"></i> Select Student Marksheet</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Student <span class="required">*</span></label>
+                            <select id="results-student-select" class="form-control" onchange="loadStudentResults(this.value)">
+                                <option value="">-- Select Student --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marksheet Summary Display -->
+                <div id="results-display-container" style="display: none;">
+                    <div class="dashboard-card" style="margin-bottom: 1.5rem;">
+                        <div class="profile-card-header" style="margin-bottom: 0; padding-bottom: 0; border: none;">
+                            <div class="profile-avatar"><i class="fa-solid fa-user-graduate"></i></div>
+                            <div class="profile-meta">
+                                <h3 id="res-student-name">Rahul Kumar</h3>
+                                <p id="res-student-meta">STU001 | Computer Science | Semester 4</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SGPA Summary Stat Card -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon indigo"><i class="fa-solid fa-book-bookmark"></i></div>
+                            <div class="stat-info">
+                                <h3 id="res-total-courses">0</h3>
+                                <p>Enrolled Subjects</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon cyan"><i class="fa-solid fa-calculator"></i></div>
+                            <div class="stat-info">
+                                <h3 id="res-total-credits">0</h3>
+                                <p>Total Credits</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon purple"><i class="fa-solid fa-star"></i></div>
+                            <div class="stat-info">
+                                <h3 id="res-credit-points">0</h3>
+                                <p>Credit Points Earned</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-card" style="border: 2px solid var(--primary);">
+                            <div class="stat-icon emerald"><i class="fa-solid fa-trophy"></i></div>
+                            <div class="stat-info">
+                                <h3 id="res-sgpa" class="text-cyan">0.00</h3>
+                                <p id="res-status-label">SGPA Score</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Marksheet Table -->
+                    <div class="table-card">
+                        <div class="card-header" style="padding: 1.25rem 1.5rem; margin-bottom: 0;">
+                            <h3><i class="fa-solid fa-table-list"></i> Course Grade Breakdown</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Course ID</th>
+                                        <th>Course Name</th>
+                                        <th>Credits (C)</th>
+                                        <th>Internal (30)</th>
+                                        <th>External (70)</th>
+                                        <th>Total (100)</th>
+                                        <th>Grade</th>
+                                        <th>Grade Point (GP)</th>
+                                        <th>Credit Points (C × GP)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-tbody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            populateStudentCourseDropdowns('results-student-select', null);
+        });
+
+        async function loadStudentResults(studentId) {
+            const container = document.getElementById('results-display-container');
+            if (!studentId) {
+                container.style.display = 'none';
+                return;
+            }
+
+            try {
+                const res = await apiFetch(`/api/results/${studentId}`);
+                const data = res.data;
+                const st = data.student;
+                const sum = data.summary;
+
+                document.getElementById('res-student-name').textContent = st.name;
+                document.getElementById('res-student-meta').textContent = `${st.student_id} | ${st.department} | Year ${st.year}, Semester ${st.semester}`;
+
+                document.getElementById('res-total-courses').textContent = sum.total_courses;
+                document.getElementById('res-total-credits').textContent = sum.total_credits;
+                document.getElementById('res-credit-points').textContent = sum.total_credit_points;
+                document.getElementById('res-sgpa').textContent = sum.sgpa;
+                document.getElementById('res-status-label').textContent = `SGPA (${sum.academic_status})`;
+
+                const tbody = document.getElementById('results-tbody');
+                tbody.innerHTML = '';
+
+                data.courses.forEach(c => {
+                    const gradeClass = getGradeBadgeClass(c.grade);
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong class="text-cyan">${c.course_id}</strong></td>
+                            <td>${c.course_name}</td>
+                            <td>${c.credits}</td>
+                            <td>${c.internal} / 30</td>
+                            <td>${c.external} / 70</td>
+                            <td><strong>${c.total_marks}</strong></td>
+                            <td><span class="badge ${gradeClass}">${c.grade}</span></td>
+                            <td><strong>${c.grade_point}</strong></td>
+                            <td><strong class="text-cyan">${c.credit_points_earned}</strong></td>
+                        </tr>
+                    `;
+                });
+
+                container.style.display = 'block';
+            } catch (err) {
+                container.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
